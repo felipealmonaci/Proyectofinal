@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neymar Jr · El 10 de Brasil</title>
+  <meta name="description" content="Página interactiva sobre Neymar da Silva Santos Júnior: trayectoria, palmarés y datos en vivo." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@360;500;700&family=Teko:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #f4f7f2;
+      --muted: #b7c4b8;
+      --bg: #07140c;
+      --bg-2: #0e2416;
+      --card: rgba(16, 40, 24, 0.78);
+      --line: rgba(245, 197, 24, 0.28);
+      --gold: #f5c518;
+      --green: #1f9d4a;
+      --green-2: #0b6b32;
+      --blue: #2f5bd0;
+      --danger: #ff6b6b;
+      --ok: #3ddc84;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Outfit", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 500px at 90% -10%, rgba(245, 197, 24, 0.18), transparent 55%),
+        radial-gradient(700px 420px at -10% 20%, rgba(31, 157, 74, 0.22), transparent 50%),
+        linear-gradient(180deg, #08150d 0%, #07140c 40%, #0a1c12 100%);
+      min-height: 100vh;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: var(--gold); }
+    button, input, select { font-family: inherit; }
+
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+
+    header.nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(7, 20, 12, 0.78);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Teko", sans-serif;
+      letter-spacing: 0.08em;
+      font-size: 28px;
+    }
+    .ball {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, #fff, #d9d9d9 40%, #9aa 70%);
+      box-shadow: inset -4px -3px 0 rgba(0, 0, 0, 0.15), 0 0 0 2px var(--gold);
+      animation: spin 8s linear infinite;
+    }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    nav a {
+      color: var(--ink);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: 0.25s ease;
+    }
+    nav a:hover, nav a:focus-visible {
+      border-color: var(--line);
+      background: rgba(245, 197, 24, 0.1);
+      outline: none;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
+      padding: 54px 0 24px;
+    }
+    .kicker {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--gold);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    h1 {
+      font-family: "Teko", sans-serif;
+      font-size: clamp(64px, 10vw, 118px);
+      line-height: 0.84;
+      margin: 8px 0 10px;
+      letter-spacing: 0.02em;
+    }
+    h1 span { color: var(--gold); }
+    .lead { color: var(--muted); font-size: 18px; max-width: 58ch; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(245, 197, 24, 0.08);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+    .hero-card {
+      position: relative;
+      min-height: 360px;
+      border-radius: 32px;
+      overflow: hidden;
+      background:
+        linear-gradient(160deg, rgba(245, 197, 24, 0.2), transparent 40%),
+        linear-gradient(180deg, #145c2e, #0a2a16 70%);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(245, 197, 24, 0.25);
+    }
+    .jersey {
+      position: absolute;
+      inset: 28px;
+      border-radius: 24px;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,0.04) 18px 19px),
+        linear-gradient(180deg, #f5c518 0 42%, #0b6b32 42% 100%);
+      display: grid;
+      place-items: center;
+      animation: floaty 4.5s ease-in-out infinite;
+    }
+    .num {
+      font-family: "Teko", sans-serif;
+      font-size: 180px;
+      line-height: 0.8;
+      color: #07210f;
+      text-shadow: 0 8px 0 rgba(255, 255, 255, 0.25);
+    }
+    .stripe {
+      position: absolute;
+      left: 0; right: 0; top: 42%;
+      height: 18px;
+      background: #123f8a;
+    }
+
+    section { padding: 28px 0; }
+    h2 {
+      font-family: "Teko", sans-serif;
+      font-size: 48px;
+      margin: 0 0 8px;
+      letter-spacing: 0.03em;
+    }
+    .sub { color: var(--muted); margin-top: 0; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .personal {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 16px;
+    }
+    label { display: block; font-size: 14px; margin-bottom: 6px; color: var(--muted); }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    input[type="text"] {
+      flex: 1;
+      min-width: 180px;
+      background: #07140c;
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    input:focus { outline: 2px solid var(--gold); }
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: var(--gold);
+      color: #1a1400;
+      font-weight: 700;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    button.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+    .msg { min-height: 1.3em; font-size: 14px; margin: 8px 0 0; }
+    .msg.bad { color: var(--danger); }
+    .msg.good { color: var(--ok); }
+    .author-banner {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(47, 91, 208, 0.35), rgba(31, 157, 74, 0.25));
+    }
+    .author-banner strong {
+      font-family: "Teko", sans-serif;
+      font-size: 42px;
+      letter-spacing: 0.04em;
+    }
+
+    .api-grid {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+    .api-grid img, .ph {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 18px;
+      background: #123f22;
+    }
+    .ph { display: grid; place-items: center; font-size: 42px; }
+    .source { font-size: 13px; color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(245, 197, 24, 0.12), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+    }
+    .stat b {
+      display: block;
+      font-family: "Teko", sans-serif;
+      font-size: 48px;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .timeline { display: grid; gap: 10px; }
+    .stop {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
+      text-align: left;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0;
+      overflow: hidden;
+    }
+    .stop .year {
+      display: grid;
+      place-items: center;
+      background: var(--green-2);
+      font-family: "Teko", sans-serif;
+      font-size: 26px;
+    }
+    .stop .body { padding: 12px 14px; }
+    .stop.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+    .detail {
+      margin-top: 12px;
+      min-height: 72px;
+      animation: rise 0.35s ease;
+    }
+
+    .dnd {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .trophies, .zones { display: grid; gap: 8px; }
+    .trophy, .zone {
+      border-radius: 14px;
+      padding: 12px;
+      border: 1px dashed rgba(245, 197, 24, 0.45);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .trophy { cursor: grab; background: rgba(245, 197, 24, 0.1); border-style: solid; }
+    .trophy:active { cursor: grabbing; }
+    .zone.over { background: rgba(31, 157, 74, 0.25); }
+    .zone.ok { border-color: var(--ok); background: rgba(61, 220, 132, 0.12); }
+    .zone.no { border-color: var(--danger); }
+
+    .quiz { display: grid; gap: 12px; }
+    .q {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .opts label {
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .opts input { margin-right: 6px; }
+
+    footer {
+      padding: 28px 0 48px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .keys { display: flex; gap: 8px; flex-wrap: wrap; }
+    kbd {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom-width: 3px;
+      border-radius: 8px;
+      padding: 2px 7px;
+      background: #102216;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes pop {
+      0% { transform: scale(0.9); }
+      60% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+    .pop { animation: pop 0.35s ease; }
+
+    @media (max-width: 860px) {
+      .hero, .personal, .api-grid, .dnd, .stats { grid-template-columns: 1fr; }
+      .stop { grid-template-columns: 88px 1fr; }
+      .hero-card { min-height: 280px; }
+      .num { font-size: 140px; }
+      nav { display: none; }
+      .menu-btn { display: inline-flex !important; }
+    }
+    .menu-btn { display: none; }
+    nav.open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 64px;
+      right: 16px;
+      background: #102216;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand"><span class="ball" aria-hidden="true"></span> NEYMAR JR</div>
+      <button class="menu-btn ghost" id="menuBtn" type="button" aria-expanded="false">Menú</button>
+      <nav id="menu">
+        <a href="#perfil">Perfil</a>
+        <a href="#api">En vivo</a>
+        <a href="#carrera">Carrera</a>
+        <a href="#juego">Juego</a>
+        <a href="#quiz">Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <section class="hero" id="perfil">
+      <div>
+        <p class="kicker">Brasil · Santos · 10</p>
+        <h1>NEYMAR <span>JR</span></h1>
+        <p class="lead">
+          Neymar da Silva Santos Júnior es un delantero brasileño nacido el 5 de febrero de 1992
+          en Mogi das Cruzes. Brilló en Santos, ganó la Champions con el Barcelona y fue figura del PSG.
+          En 2025 volvió al club que lo formó.
+        </p>
+        <div class="chips">
+          <span class="chip">Delantero / mediapunta</span>
+          <span class="chip">1,75 m</span>
+          <span class="chip">Pie derecho</span>
+          <span class="chip">Camiseta 10</span>
+        </div>
+      </div>
+      <div class="hero-card" aria-hidden="true">
+        <div class="jersey">
+          <div class="stripe"></div>
+          <div class="num">10</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Tu nombre en la página</h2>
+      <p class="sub">Escribe tu nombre. Se guarda en este navegador y aparece en el cartel.</p>
+      <div class="personal">
+        <form class="panel" id="nameForm">
+          <label for="student">Nombre y apellido</label>
+          <div class="row">
+            <input id="student" name="student" type="text" maxlength="40" placeholder="Ej: Ana Pérez" autocomplete="name" />
+            <button type="submit">Guardar</button>
+            <button class="ghost" type="button" id="clearName">Borrar</button>
+          </div>
+          <p class="msg" id="nameMsg" role="status"></p>
+        </form>
+        <div class="panel author-banner">
+          <span>Página hecha por</span>
+          <strong id="author">Invitado</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="api">
+      <h2>Datos en vivo</h2>
+      <p class="sub">Se consulta una API gratuita al abrir la página. Si Wikipedia no responde, se usa TheSportsDB.</p>
+      <article class="panel api-grid" id="apiCard">
+        <div class="ph" id="apiPhoto">10</div>
+        <div>
+          <h3 id="apiTitle">Cargando ficha…</h3>
+          <p id="apiText">Conectando con la API.</p>
+          <p class="source" id="apiSource"></p>
+          <button type="button" id="reloadApi">Volver a consultar</button>
+        </div>
+      </article>
+    </section>
+
+    <section>
+      <h2>Números de carrera</h2>
+      <p class="sub">Cifras de club aproximadas, todas las competiciones, según el resumen público de octubre de 2026.</p>
+      <div class="stats" id="stats">
+        <article class="stat"><b data-count="643">0</b> Partidos de club</article>
+        <article class="stat"><b data-count="379">0</b> Goles de club</article>
+        <article class="stat"><b data-count="130">0</b> Partidos con Brasil</article>
+        <article class="stat"><b data-count="80">0</b> Goles con Brasil</article>
+      </div>
+    </section>
+
+    <section id="carrera">
+      <h2>Línea de tiempo</h2>
+      <p class="sub">Haz clic en una etapa o usa las flechas del teclado cuando esta zona está activa.</p>
+      <div class="timeline" id="timeline"></div>
+      <div class="panel detail" id="detail" tabindex="0">Elige un club para ver el resumen.</div>
+    </section>
+
+    <section id="juego">
+      <h2>Arrastra el trofeo</h2>
+      <p class="sub">Suelta cada título en el equipo correcto. También puedes usar el teclado: enfoca un trofeo y pulsa 1, 2, 3 o 4.</p>
+      <div class="dnd">
+        <div>
+          <h3>Trofeos</h3>
+          <div class="trophies" id="trophies"></div>
+        </div>
+        <div>
+          <h3>Equipos</h3>
+          <div class="zones" id="zones"></div>
+          <p class="msg" id="dndMsg" role="status"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <h2>Quiz rápido</h2>
+      <form class="panel quiz" id="quizForm">
+        <fieldset class="q">
+          <legend>1. ¿En qué año nació Neymar?</legend>
+          <div class="opts">
+            <label><input type="radio" name="q1" value="1990" /> 1990</label>
+            <label><input type="radio" name="q1" value="1992" /> 1992</label>
+            <label><input type="radio" name="q1" value="1994" /> 1994</label>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend>2. ¿Con qué club ganó la Champions League?</legend>
+          <div class="opts">
+            <label><input type="radio" name="q2" value="psg" /> PSG</label>
+            <label><input type="radio" name="q2" value="barca" /> Barcelona</label>
+            <label><input type="radio" name="q2" value="santos" /> Santos</label>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend>3. ¿A qué club volvió en 2025?</legend>
+          <div class="opts">
+            <label><input type="radio" name="q3" value="santos" /> Santos</label>
+            <label><input type="radio" name="q3" value="barca" /> Barcelona</label>
+            <label><input type="radio" name="q3" value="hilal" /> Al-Hilal</label>
+          </div>
+        </fieldset>
+        <div class="row">
+          <button type="submit">Corregir</button>
+          <button class="ghost" type="reset" id="resetQuiz">Reiniciar</button>
+        </div>
+        <p class="msg" id="quizMsg" role="status"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p class="keys">Teclado: <kbd>↑</kbd> <kbd>↓</kbd> cambian de etapa · <kbd>1</kbd>-<kbd>4</kbd> sueltan el trofeo enfocado · <kbd>Esc</kbd> cierra el menú.</p>
+      <p>Página escolar sobre la carrera deportiva de Neymar. Los textos en vivo vienen de Wikipedia o TheSportsDB. Las cifras fijas son un resumen público y pueden cambiar con cada partido.</p>
+    </div>
+  </footer>
+
+  <script>
+    const stops = [
+      { id: "santos1", years: "2009–2013", club: "Santos", text: "Debut profesional a los 17 años. Copa de Brasil 2010, Libertadores 2011 y Recopa Sudamericana 2012. Ahí se hizo el ídolo del 10." },
+      { id: "barca", years: "2013–2017", club: "Barcelona", text: "Llegó al tridente con Luis Suárez y Lionel Messi. Champions, Mundial de Clubes y dos Ligas. En 2015 fue el año más grande del club." },
+      { id: "psg", years: "2017–2023", club: "Paris Saint-Germain", text: "Máximo fichaje del club en ese momento. Varios títulos de Ligue 1 y copas de Francia. También etapas cortadas por lesiones." },
+      { id: "hilal", years: "2023–2025", club: "Al-Hilal", text: "Paso corto por Arabia Saudita, marcado por lesiones. Jugó pocos partidos antes de volver a Brasil." },
+      { id: "santos2", years: "2025–", club: "Santos", text: "Regreso al club de origen, otra vez con la 10, para cerrar el círculo en Vila Belmiro." }
+    ];
+
+    const trophies = [
+      { id: "ucl", name: "Champions League 2015", club: "barca" },
+      { id: "lib", name: "Copa Libertadores 2011", club: "santos" },
+      { id: "ligue", name: "Ligue 1", club: "psg" },
+      { id: "oly", name: "Oro olímpico 2016", club: "brasil" }
+    ];
+    const zones = [
+      { id: "santos", name: "1 · Santos" },
+      { id: "barca", name: "2 · Barcelona" },
+      { id: "psg", name: "3 · PSG" },
+      { id: "brasil", name: "4 · Brasil" }
+    ];
+
+    const timeline = document.getElementById("timeline");
+    const detail = document.getElementById("detail");
+    let active = 0;
+
+    function renderStops() {
+      timeline.innerHTML = "";
+      stops.forEach((stop, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "stop" + (i === active ? " active" : "");
+        btn.innerHTML = `<span class="year">${stop.years}</span><span class="body"><strong>${stop.club}</strong></span>`;
+        btn.addEventListener("click", () => selectStop(i));
+        timeline.appendChild(btn);
+      });
+    }
+
+    function selectStop(i) {
+      active = (i + stops.length) % stops.length;
+      renderStops();
+      const stop = stops[active];
+      detail.classList.remove("pop");
+      detail.textContent = `${stop.club} (${stop.years}): ${stop.text}`;
+      void detail.offsetWidth;
+      detail.classList.add("pop");
+    }
+
+    detail.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); selectStop(active + 1); }
+      if (e.key === "ArrowUp") { e.preventDefault(); selectStop(active - 1); }
+    });
+
+    const form = document.getElementById("nameForm");
+    const student = document.getElementById("student");
+    const nameMsg = document.getElementById("nameMsg");
+    const author = document.getElementById("author");
+
+    function paintName(value) {
+      author.textContent = value;
+      document.title = `Neymar Jr · página de ${value}`;
+    }
+
+    const saved = localStorage.getItem("neymar-author");
+    if (saved) {
+      student.value = saved;
+      paintName(saved);
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const value = student.value.trim().replace(/\s+/g, " ");
+      if (value.length < 2 || !/^[\p{L}\s.'-]+$/u.test(value)) {
+        nameMsg.textContent = "Escribe un nombre válido, solo letras, de al menos 2 caracteres.";
+        nameMsg.className = "msg bad";
+        student.focus();
+        return;
+      }
+      localStorage.setItem("neymar-author", value);
+      paintName(value);
+      nameMsg.textContent = "Nombre guardado en este navegador.";
+      nameMsg.className = "msg good";
+    });
+
+    document.getElementById("clearName").addEventListener("click", () => {
+      localStorage.removeItem("neymar-author");
+      student.value = "";
+      paintName("Invitado");
+      nameMsg.textContent = "Nombre borrado.";
+      nameMsg.className = "msg good";
+    });
+
+    async function loadApi() {
+      const title = document.getElementById("apiTitle");
+      const text = document.getElementById("apiText");
+      const source = document.getElementById("apiSource");
+      const photo = document.getElementById("apiPhoto");
+      title.textContent = "Cargando ficha…";
+      text.textContent = "Consultando Wikipedia.";
+      try {
+        const res = await fetch("https://es.wikipedia.org/api/rest_v1/page/summary/Neymar");
+        if (!res.ok) throw new Error("wiki");
+        const data = await res.json();
+        title.textContent = data.title || "Neymar";
+        text.textContent = data.extract || "Sin resumen.";
+        source.textContent = "Fuente: API de Wikipedia en español · " + (data.content_urls?.desktop?.page || "");
+        if (data.thumbnail?.source) {
+          photo.outerHTML = `<img id="apiPhoto" alt="Imagen de la ficha de Wikipedia" src="${data.thumbnail.source}" />`;
+        }
+      } catch (err) {
+        try {
+          const res = await fetch("https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=Neymar");
+          if (!res.ok) throw new Error("sports");
+          const data = await res.json();
+          const player = (data.player || []).find((p) => /neymar/i.test(p.strPlayer)) || data.player?.[0];
+          if (!player) throw new Error("empty");
+          title.textContent = player.strPlayer;
+          text.textContent = (player.strDescriptionES || player.strDescriptionEN || "Ficha encontrada.").slice(0, 520) + "…";
+          source.textContent = `Fuente: TheSportsDB · ${player.strTeam || "Santos"} · ${player.dateBorn || ""}`;
+          if (player.strCutout || player.strThumb) {
+            photo.outerHTML = `<img id="apiPhoto" alt="Retrato de la ficha deportiva" src="${player.strCutout || player.strThumb}" />`;
+          }
+        } catch (err2) {
+          title.textContent = "No se pudo conectar";
+          text.textContent = "Revisa tu internet y pulsa el botón. La página sigue usable sin la API.";
+          source.textContent = "Error de red o de la API.";
+        }
+      }
+    }
+
+    document.getElementById("reloadApi").addEventListener("click", loadApi);
+
+    function animateStats() {
+      document.querySelectorAll("[data-count]").forEach((el) => {
+        const target = Number(el.dataset.count);
+        const start = performance.now();
+        function tick(now) {
+          const p = Math.min(1, (now - start) / 900);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    const trophyBox = document.getElementById("trophies");
+    const zoneBox = document.getElementById("zones");
+    const dndMsg = document.getElementById("dndMsg");
+    let focusedTrophy = null;
+
+    function renderGame() {
+      trophyBox.innerHTML = "";
+      trophies.forEach((item) => {
+        const el = document.createElement("div");
+        el.className = "trophy";
+        el.draggable = true;
+        el.tabIndex = 0;
+        el.dataset.id = item.id;
+        el.textContent = item.name;
+        el.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", item.id);
+          focusedTrophy = item.id;
+        });
+        el.addEventListener("focus", () => { focusedTrophy = item.id; });
+        trophyBox.appendChild(el);
+      });
+      zoneBox.innerHTML = "";
+      zones.forEach((zone) => {
+        const el = document.createElement("div");
+        el.className = "zone";
+        el.dataset.id = zone.id;
+        el.textContent = zone.name;
+        el.addEventListener("dragover", (e) => { e.preventDefault(); el.classList.add("over"); });
+        el.addEventListener("dragleave", () => el.classList.remove("over"));
+        el.addEventListener("drop", (e) => {
+          e.preventDefault();
+          el.classList.remove("over");
+          placeTrophy(e.dataTransfer.getData("text/plain"), zone.id, el);
+        });
+        zoneBox.appendChild(el);
+      });
+    }
+
+    function placeTrophy(trophyId, zoneId, zoneEl) {
+      const item = trophies.find((t) => t.id === trophyId);
+      if (!item) return;
+      const ok = item.club === zoneId;
+      zoneEl.classList.toggle("ok", ok);
+      zoneEl.classList.toggle("no", !ok);
+      zoneEl.textContent = `${zones.find((z) => z.id === zoneId).name}: ${item.name} · ${ok ? "correcto" : "inténtalo de nuevo"}`;
+      const card = document.querySelector(`.trophy[data-id="${trophyId}"]`);
+      if (ok && card) card.remove();
+      const left = document.querySelectorAll(".trophy").length;
+      dndMsg.textContent = ok ? (left ? "Bien. Sigue con los demás." : "Tablero completo.") : "Ese trofeo pertenece a otro equipo.";
+      dndMsg.className = "msg " + (ok ? "good" : "bad");
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        document.getElementById("menu").classList.remove("open");
+      }
+      if (!focusedTrophy) return;
+      const map = { "1": "santos", "2": "barca", "3": "psg", "4": "brasil" };
+      if (map[e.key] && document.activeElement?.classList.contains("trophy")) {
+        const zoneEl = document.querySelector(`.zone[data-id="${map[e.key]}"]`);
+        placeTrophy(focusedTrophy, map[e.key], zoneEl);
+      }
+    });
+
+    const quizForm = document.getElementById("quizForm");
+    const quizMsg = document.getElementById("quizMsg");
+    quizForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const answers = { q1: "1992", q2: "barca", q3: "santos" };
+      const data = new FormData(quizForm);
+      const missing = ["q1", "q2", "q3"].filter((key) => !data.get(key));
+      if (missing.length) {
+        quizMsg.textContent = "Responde las tres preguntas antes de corregir.";
+        quizMsg.className = "msg bad";
+        return;
+      }
+      let score = 0;
+      Object.keys(answers).forEach((key) => { if (data.get(key) === answers[key]) score += 1; });
+      quizMsg.textContent = score === 3 ? "3 de 3. Conoces bien la carrera de Neymar." : `${score} de 3. Revisa la línea de tiempo y vuelve a intentar.`;
+      quizMsg.className = "msg " + (score === 3 ? "good" : "bad");
+    });
+    document.getElementById("resetQuiz").addEventListener("click", () => {
+      quizMsg.textContent = "";
+    });
+
+    const menuBtn = document.getElementById("menuBtn");
+    menuBtn.addEventListener("click", () => {
+      const menu = document.getElementById("menu");
+      const open = menu.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(open));
+    });
+
+    renderStops();
+    selectStop(0);
+    renderGame();
+    loadApi();
+    const stats = document.getElementById("stats");
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          animateStats();
+          io.disconnect();
+        }
+      }, { threshold: 0.4 });
+      io.observe(stats);
+    } else {
+      animateStats();
+    }
+  </script>
+</body>
+</html>
